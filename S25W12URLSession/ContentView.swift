@@ -1,15 +1,26 @@
-@Environment(\.dismiss) var dismiss
+//@Environment(\.dismiss) var dismiss
 
 import SwiftUI
 
 struct ContentView: View {
     var body: some View {
         TabView {
+            // MARK: - 1. 기존 Song 탭 (유지)
             SongView()
                 .tabItem {
                     Image(systemName: "list.bullet")
                     Text("Songs")
                 }
+            
+            // MARK: - 2. 새로 추가하는 Tint 탭
+            // TintView는 별도의 파일(TintView.swift)에 정의되어 있어야 합니다.
+            TintView()
+                .tabItem {
+                    Image(systemName: "paintpalette.fill") // 틴트에 어울리는 아이콘
+                    Text("틴트")
+                }
+            
+            // MARK: - 3. 기존 Singer 탭 (유지)
             SingerView()
                 .tabItem {
                     Image(systemName: "person")
@@ -18,7 +29,6 @@ struct ContentView: View {
         }
     }
 }
-
 struct SongView: View {
     @State private var viewModel = SongViewModel()
     @State private var showingAddSheet = false
