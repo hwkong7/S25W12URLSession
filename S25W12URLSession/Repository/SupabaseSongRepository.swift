@@ -2,11 +2,18 @@ import Foundation
 
 final class SupabaseSongRepository: SongRepository {
     func fetchSongs() async throws -> [Song] {
-        let requestURL = URL(string: SongApiConfig.serverURL)!
-        let (data, _) = try! await URLSession.shared.data(from: requestURL)
-        let decoder = JSONDecoder()
-        return try! decoder.decode([Song].self, from: data)
+        let url = URL(string: "\(SongApiConfig.projectURL)/rest/v1/songs?select=*")!
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+        request.setValue("application/json", forHTTPHeaderField: "Accept")
+        request.setValue(SongApiConfig.apiKey, forHTTPHeaderField: "apikey")
+
+        let (data, _) = try await URLSession.shared.data(for: request)
+
+        return try JSONDecoder().decode([Song].self, from: data)
     }
+
     
     func saveSong(_ song: Song) async throws {
         let requestURL = URL(string: SongApiConfig.serverURL)!
@@ -18,7 +25,7 @@ final class SupabaseSongRepository: SongRepository {
         let (_, response) = try await URLSession.shared.data(for: request)
         //debugPrint(response)
 
-        // Guard cluase (조건에 맞지 않으면 바로 return (여기서는 throw)) 사용
+        // Guard clause (조건에 맞지 않으면 바로 return (여기서는 throw)) 사용
         guard let httpResponse = response
                 as? HTTPURLResponse,
                 httpResponse.statusCode == 201
@@ -37,7 +44,7 @@ final class SupabaseSongRepository: SongRepository {
         let (_, response) = try await URLSession.shared.data(for: request)
         //debugPrint(response)
 
-        // Guard cluase (조건에 맞지 않으면 바로 return (여기서는 throw)) 사용
+        // Guard clause (조건에 맞지 않으면 바로 return (여기서는 throw)) 사용
         guard let httpResponse = response
                 as? HTTPURLResponse,
                 httpResponse.statusCode == 204
